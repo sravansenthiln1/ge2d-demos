@@ -2,10 +2,22 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-int bmp_read(void *buf, const char *path) {
+int64_t get_cur_us() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000 + tv.tv_usec;
+}
+
+int64_t get_cur_ms() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+}
+
+int bmp_read(void* buf, const char* path) {
     int size;
 
-    FILE *file = fopen(path, "rb");
+    FILE* file = fopen(path, "rb");
     if (!file) {
         fprintf(stderr, "Could not open %s\n", path);
         return -1;
@@ -40,10 +52,10 @@ int bmp_read(void *buf, const char *path) {
     return(0);
 }
 
-int bmp_write(void *buf, const char *path, int w, int h) {
+int bmp_write(void* buf, const char* path, int w, int h) {
     int size;
 
-    FILE *file = fopen(path, "wb+");
+    FILE* file = fopen(path, "wb+");
     if (!file) {
         fprintf(stderr, "Could not open %s\n", path);
         return -1;

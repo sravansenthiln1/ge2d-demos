@@ -23,7 +23,7 @@ int main(void) {
     int dst_height = 1080;
     int dst_format = PIXEL_FORMAT_RGBA_8888;
 
-    int op = AML_GE2D_STRETCHBLIT;
+    int op = AML_GE2D_FILLRECTANGLE;
 
     aml_ge2d_t amlge2d;
 
@@ -35,14 +35,12 @@ int main(void) {
 
     /* Initialize GE2D */
     amlge2d.ge2dinfo.src_info[0].memtype = GE2D_CANVAS_ALLOC;
-    amlge2d.ge2dinfo.src_info[0].mem_alloc_type = AML_GE2D_MEM_DMABUF;
     amlge2d.ge2dinfo.src_info[0].canvas_w = src_width;
     amlge2d.ge2dinfo.src_info[0].canvas_h = src_height;
     amlge2d.ge2dinfo.src_info[0].format = src_format;
     amlge2d.ge2dinfo.src_info[0].plane_number = 4;
 
     amlge2d.ge2dinfo.dst_info.memtype = GE2D_CANVAS_ALLOC;
-    amlge2d.ge2dinfo.dst_info.mem_alloc_type = AML_GE2D_MEM_DMABUF;
     amlge2d.ge2dinfo.dst_info.canvas_w = dst_width;
     amlge2d.ge2dinfo.dst_info.canvas_h = dst_height;
     amlge2d.ge2dinfo.dst_info.format = dst_format;
@@ -62,42 +60,46 @@ int main(void) {
     if (ret < 0)
         goto exit;
 
-    sync_src_dmabuf_to_device(&amlge2d.ge2dinfo, 0);
-
     if (amlge2d.src_size[0] == 0)
         return 0;
 
-    bmp_read(amlge2d.ge2dinfo.src_info[0].vaddr[0], "./input_rgba.bmp");
-
-    /* Configure for the copy operation */
-    amlge2d.ge2dinfo.src_info[0].rect.x = 0;
-    amlge2d.ge2dinfo.src_info[0].rect.y = 0;
-    amlge2d.ge2dinfo.src_info[0].rect.w = src_width;
-    amlge2d.ge2dinfo.src_info[0].rect.h = src_height;
-
-    amlge2d.ge2dinfo.dst_info.rect.x = 0;
-    amlge2d.ge2dinfo.dst_info.rect.y = 0;
-    amlge2d.ge2dinfo.dst_info.rect.w = dst_width;
-    amlge2d.ge2dinfo.dst_info.rect.h = dst_height;
-    amlge2d.ge2dinfo.dst_info.rotation = GE2D_ROTATION_0;
-
-    amlge2d.ge2dinfo.src_info[0].layer_mode = LAYER_MODE_PREMULTIPLIED;
-    amlge2d.ge2dinfo.src_info[0].plane_alpha = 0xff;
-
+    /* Configure for the draw operation */    
     start = get_cur_us();
+
+    amlge2d.ge2dinfo.dst_info.rect.x = 256;
+    amlge2d.ge2dinfo.dst_info.rect.y = 256;
+    amlge2d.ge2dinfo.dst_info.rect.w = 512;
+    amlge2d.ge2dinfo.dst_info.rect.h = 512;
+    amlge2d.ge2dinfo.color = 0x0000ffff;    // BGRA
+
     ret = aml_ge2d_process(&amlge2d.ge2dinfo);
+    
+    amlge2d.ge2dinfo.dst_info.rect.x = 256;
+    amlge2d.ge2dinfo.dst_info.rect.y = 256;
+    amlge2d.ge2dinfo.dst_info.rect.w = 256;
+    amlge2d.ge2dinfo.dst_info.rect.h = 256;
+    amlge2d.ge2dinfo.color = 0x00ff00ff;
+
+    ret = aml_ge2d_process(&amlge2d.ge2dinfo);
+
+    amlge2d.ge2dinfo.dst_info.rect.x = 256;
+    amlge2d.ge2dinfo.dst_info.rect.y = 256;
+    amlge2d.ge2dinfo.dst_info.rect.w = 128;
+    amlge2d.ge2dinfo.dst_info.rect.h = 128;
+    amlge2d.ge2dinfo.color = 0xff0000ff;
+
+    ret = aml_ge2d_process(&amlge2d.ge2dinfo);
+    
     end = get_cur_us();
 
     /* Check operation success */
     if (ret < 0) {
-        printf("dmabuf err\n");
+        printf("draw err\n");
     }
     else {
-        printf("dmabuf success\n");
+        printf("draw success\n");
         printf("exec time: %ld us\n", end - start);
     }
-
-    sync_dst_dmabuf_to_cpu(&amlge2d.ge2dinfo);
 
     /* Write output image */
     bmp_write(amlge2d.ge2dinfo.dst_info.vaddr[0], "./output.bmp", dst_width, dst_height);

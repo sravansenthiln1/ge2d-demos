@@ -322,7 +322,7 @@ int ge2d_post_queue(int fd);
  * @param data_type GE2D data type.
  * @return Returns 0 on success (ge2d_success), -1 on failure (ge2d_fail).
  */
-int ge2d_attach_dma_fd(int fd, aml_ge2d_info_t *pge2dinfo, enum 
+int ge2d_attach_dma_fd(int fd, aml_ge2d_info_t *pge2dinfo, enum
                 ge2d_data_type_e data_type);
 
 /**

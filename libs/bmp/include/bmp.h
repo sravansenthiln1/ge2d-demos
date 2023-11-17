@@ -25,8 +25,46 @@ typedef struct {
 } bmp_header;
 #pragma pack()
 
-int bmp_read(void *buf, const char *path);
+/**
+ * @brief Reads an RGBA bitmap from a file into a buffer.
+ *
+ * This function reads an RGBA bitmap from the specified file path and stores the pixel data in the provided buffer.
+ *
+ * @param buf Pointer to the buffer where the bitmap data will be stored.
+ * @param path The file path of the RGBA bitmap to be read.
+ * @return 0 on success, -1 on failure.
+ */
+int bmp_read(void* buf, const char* path);
 
-int bmp_write(void *buf, const char *path, int w, int h);
+/**
+ * @brief Writes an RGBA bitmap to a file from a buffer.
+ *
+ * This function writes the RGBA bitmap data from the provided buffer to the specified file path.
+ *
+ * @param buf Pointer to the buffer containing the RGBA bitmap data.
+ * @param path The file path where the RGBA bitmap will be written.
+ * @param w Width of the bitmap.
+ * @param h Height of the bitmap.
+ * @return 0 on success, -1 on failure.
+ */
+int bmp_write(void* buf, const char* path, int w, int h);
+
+/**
+ * @brief Gets the current time in milliseconds.
+ *
+ * This function returns the current time in milliseconds.
+ *
+ * @return Current time in milliseconds.
+ */
+int64_t get_cur_ms();
+
+/**
+ * @brief Gets the current time in microseconds.
+ *
+ * This function returns the current time in microseconds.
+ *
+ * @return Current time in microseconds.
+ */
+int64_t get_cur_us();
 
 #endif // BMP_H
