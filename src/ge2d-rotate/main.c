@@ -63,8 +63,10 @@ int main(void) {
     if (amlge2d.src_size[0] == 0)
         return 0;
 
-    bmp_read(amlge2d.ge2dinfo.src_info[0].vaddr[0], "./input_rgba.bmp");
-
+    ret = bmp_read(amlge2d.ge2dinfo.src_info[0].vaddr[0], "./input_rgba.bmp");
+    if (ret < 0)
+        goto exit;
+        
     /* Configure for the rotation operation */
     amlge2d.ge2dinfo.src_info[0].rect.x = 0;
     amlge2d.ge2dinfo.src_info[0].rect.y = 0;
