@@ -11,7 +11,7 @@
 
 #include "../../libs/bmp/include/bmp.h"
 
-int nv12_write(const char* buf, const char* path, int width, int height) {
+int nv12_write(const char* luma_buf, const char* chroma_buf, const char* path, int width, int height) {
     int size;
 
     FILE* file = fopen(path, "wb");
@@ -20,8 +20,11 @@ int nv12_write(const char* buf, const char* path, int width, int height) {
         return -1;
     }
 
-    size = width * height * 3 / 2;
-    fwrite(buf, size, 1, file);
+    size = width * height;
+    fwrite(luma_buf, size, 1, file);
+    
+    size = width * height / 2;
+    fwrite(chroma_buf, size, 1, file);
 
     fclose(file);
 
@@ -112,7 +115,7 @@ int main(void) {
     }
 
     /* Write output image */
-    nv12_write(amlge2d.ge2dinfo.dst_info.vaddr[0], "./output.nv12", dst_width, dst_height);
+    nv12_write(amlge2d.ge2dinfo.dst_info.vaddr[0], amlge2d.ge2dinfo.dst_info.vaddr[1], "./output.nv12", dst_width, dst_height);
 
     /* Clean up memory objects */
 exit:
